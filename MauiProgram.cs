@@ -1,4 +1,5 @@
-﻿using Microsoft.Extensions.Logging;
+﻿using DBConnectedFinalProjectThing.Services;
+using Microsoft.Extensions.Logging;
 
 namespace DBConnectedFinalProjectThing
 {
@@ -18,7 +19,8 @@ namespace DBConnectedFinalProjectThing
 
 #if DEBUG
     		builder.Services.AddBlazorWebViewDeveloperTools();
-    		builder.Logging.AddDebug();
+            builder.Services.AddSingleton<GymDbService>(provider => new GymDbService(App.ConnectionString));
+            builder.Logging.AddDebug();
 #endif
 
             return builder.Build();
