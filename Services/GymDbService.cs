@@ -28,13 +28,6 @@ namespace DBConnectedFinalProjectThing.Services
                         {
                             while (reader.Read())
                             {
-                                equipmentList.Add(new Equipment
-                                {
-                                    Id = reader.GetInt32(reader.GetOrdinal("id")),
-                                    UnitSize = reader.GetInt32(reader.GetOrdinal("unit_size")),
-                                    Name = reader.GetString(reader.GetOrdinal("name")),
-                                    Active = reader.GetString(reader.GetOrdinal("active"))
-                                });
                             }
                         }
                     }
