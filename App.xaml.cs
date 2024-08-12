@@ -6,8 +6,13 @@
         public App()
         {
             InitializeComponent();
-
+            PopulateEquipmentData();
             MainPage = new MainPage();
+        }
+
+        private void PopulateEquipmentData()
+        {
+
         }
     }
 }

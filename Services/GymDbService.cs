@@ -89,12 +89,5 @@ namespace DBConnectedFinalProjectThing.Services
                 }
             }
         }
-        public class Equipment
-        {
-            public int Id { get; set; }
-            public int UnitSize { get; set; }
-            public string Name { get; set; }
-            public string Active { get; set; }
-        }
     }
 }
