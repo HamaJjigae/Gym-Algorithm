@@ -1,0 +1,64 @@
+﻿@page "/margins"
+@using DBConnectedFinalProjectThing.Services
+@using DBConnectedFinalProjectThing.Components
+@inject NavigationManager Navigation
+@inject GymDim GymDim
+@inject IJSRuntime JSRuntime
+
+<main class="margin-main">
+    <div>
+        <h1>Dimensions</h1>
+        <h2>(in feet)</h2>
+    </div>
+    <div class="horiflex">
+        <div class="input-container">
+            <label for="length">Length:</label>
+            <input type="text" id="length" @bind="Length" placeholder="Enter length" class="input-box" />
+        </div>
+        <div class="input-container">
+            <label for="width">Width:</label>
+            <input type="text" id="width" @bind="Width" placeholder="Enter width" class="input-box" />
+        </div>
+    </div>
+    <button @onclick="HandleClick">Continue</button>
+
+    @if (showAlert)
+    {
+        <CustomAlert Message="Please enter a valid length and width." OnClose="HandleAlertClose" />
+    }
+</main>
+
+@code {
+    private string Length { get; set; }
+    private string Width { get; set; }
+    private bool showAlert { get; set; } = false;
+
+    private async Task HandleClick()
+    {
+        if (IsValidDimension(Length, out int length) && IsValidDimension(Width, out int width))
+        {
+            GymDim.Length = length;
+            GymDim.Width = width;
+            Navigation.NavigateTo("/equipmentmanagement");
+        }
+        else
+        {
+            showAlert = true;
+        }
+    }
+
+    private bool IsValidDimension(string value, out int result)
+    {
+        if (int.TryParse(value, out result))
+        {
+            return result >= 10;
+        }
+        result = 0;
+        return false;
+    }
+
+    private void HandleAlertClose(bool isClosed)
+    {
+        showAlert = false;
+    }
+}

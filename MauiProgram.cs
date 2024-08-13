@@ -20,6 +20,7 @@ namespace DBConnectedFinalProjectThing
 #if DEBUG
     		builder.Services.AddBlazorWebViewDeveloperTools();
             builder.Services.AddSingleton<EquipmentService>();
+            builder.Services.AddSingleton<GymDim>();
             //builder.Services.AddSingleton<GymDbService>(provider => new GymDbService(App.ConnectionString));
             builder.Logging.AddDebug();
 #endif

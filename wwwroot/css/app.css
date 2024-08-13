@@ -84,3 +84,56 @@ h1:focus {
         padding-left: env(safe-area-inset-left);
     }
 }
+
+.home-main {
+    display: flex;
+    flex-direction:column;
+    justify-content: center;
+    align-items: center;
+    height: 80vh;
+    text-align: center;
+    gap: 90px;
+}
+.home-main button{
+    background-color: dodgerblue;
+    color: white;
+    width: 150px;
+    height: 50px;
+    padding: 10px 20px;
+    font-size: 18px;
+    border-radius: 8px;
+    cursor: pointer;
+}
+.margin-main {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    height: 80vh;
+    text-align: center;
+    gap: 90px;
+}
+.horiflex {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+    gap: 50px;
+}
+.margin-main button {
+    background-color: dodgerblue;
+    color: white;
+    width: 150px;
+    height: 50px;
+    padding: 10px 20px;
+    font-size: 18px;
+    border-radius: 8px;
+    cursor: pointer;
+}
+.input-container {
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    background-color: rgba(255, 255, 255, 0.5);
+    font-size: 16px;
+}

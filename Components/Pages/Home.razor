@@ -1,4 +1,21 @@
 ﻿@page "/"
-@using DBConnectedFinalProjectThing.Services
-@using System.Diagnostics;
-<PageTitle>Home</PageTitle>
+@inject NavigationManager Navigation
+<head>
+    <link rel="stylesheet" href="css/app.css" />
+    <PageTitle>Home</PageTitle>
+</head>
+<main class="home-main">
+    <div>
+        <h1>Welcome to the Gym Organisation App!</h1>
+    </div>
+    <div>
+        <button @onclick="NavigateToPage">Begin</button>
+    </div>
+</main>
+
+@code {
+    void NavigateToPage()
+    {
+        Navigation.NavigateTo("/margins");
+    }
+}
