@@ -34,21 +34,7 @@ namespace DBConnectedFinalProjectThing.Algorithms
             }
             return boxArray;
         }
-        public void PrintBox(char[,] boxArray)
-        {
-            int realHeight = boxArray.GetLength(0);
-            int realWidth = boxArray.GetLength(1);
-
-            for (int row = 0; row < realHeight; row++)
-            {
-                for (int col = 0; col < realWidth; col++)
-                {
-                    Console.Write(boxArray[row, col]);
-                }
-                Console.WriteLine();
-            }
-        }
-        public (char[,], List<string>, List<string>) EquipmentSorting(char[,] boxArray, List<Equipment> equipmentList)
+        public (char[,], List<string>, List<string>, List<string>) EquipmentSorting(char[,] boxArray, List<Equipment> equipmentList)
         {
             int realWidth = boxArray.GetLength(1); //this is columns
             int realHeight = boxArray.GetLength(0); //this is rows
@@ -90,98 +76,103 @@ namespace DBConnectedFinalProjectThing.Algorithms
             }
             List<string> Legend = new List<string>();
             List<string> Unused = new List<string>();
+            List<string> Inactive = new List<string>();
             foreach (Equipment equipment in equipmentList)
             {
-                Dictionary<(int, int), int> horizontalDict = HorizontalChecker.CheckRowForSpaces(boxArray);
-                Dictionary<(int, int), int> verticalDict = VerticalChecker.CheckColumnForSpaces(boxArray);
-                (int, int) foundKeyH = (0, 0);
-                int foundValueH = 0;
-                (int, int) foundKeyV = (0, 0);
-                int foundValueV = 0;
-                int unitSize = equipment.UnitSize;
-                foreach (var kvp in horizontalDict)
+                if (equipment.Active)
                 {
-                    if (kvp.Value >= unitSize)
+                    Dictionary<(int, int), int> horizontalDict = HorizontalChecker.CheckRowForSpaces(boxArray);
+                    Dictionary<(int, int), int> verticalDict = VerticalChecker.CheckColumnForSpaces(boxArray);
+                    (int, int) foundKeyH = (0, 0);
+                    int foundValueH = 0;
+                    (int, int) foundKeyV = (0, 0);
+                    int foundValueV = 0;
+                    int unitSize = equipment.UnitSize;
+                    foreach (var kvp in horizontalDict)
                     {
-                        foundKeyH = kvp.Key;
-                        foundValueH = kvp.Value;
-                        break;
-                    }
-                }
-                foreach (var kvp in verticalDict)
-                {
-                    if (kvp.Value >= unitSize)
-                    {
-                        foundKeyV = kvp.Key;
-                        foundValueV = kvp.Value;
-                        break;
-                    }
-                }
-                if (foundKeyH != (0, 0))
-                {
-                    var key = foundKeyH;
-                    for (int i = 0; i < unitSize; i++)
-                    {
-                        if (equipment.EquipmentCode == null)
+                        if (kvp.Value >= unitSize)
                         {
-                            throw new InvalidOperationException("EquipmentCode is null.");
+                            foundKeyH = kvp.Key;
+                            foundValueH = kvp.Value;
+                            break;
                         }
-                        else if (equipment.EquipmentCode.Length == 0)
+                    }
+                    foreach (var kvp in verticalDict)
+                    {
+                        if (kvp.Value >= unitSize)
                         {
-                            throw new InvalidOperationException("EquipmentCode is empty.");
+                            foundKeyV = kvp.Key;
+                            foundValueV = kvp.Value;
+                            break;
+                        }
+                    }
+                    if (foundKeyH != (0, 0))
+                    {
+                        var key = foundKeyH;
+                        for (int i = 0; i < unitSize; i++)
+                        {
+                            if (equipment.EquipmentCode == null)
+                            {
+                                throw new InvalidOperationException("EquipmentCode is null.");
+                            }
+                            else if (equipment.EquipmentCode.Length == 0)
+                            {
+                                throw new InvalidOperationException("EquipmentCode is empty.");
+                            }
+                            else
+                            {
+                                boxArray[key.Item1, key.Item2 + i] = equipment.EquipmentCode[0];
+                            }
+                        }
+                        if (foundValueH - unitSize == 0)
+                        {
+                            horizontalDict.Remove(foundKeyH);
                         }
                         else
                         {
-                            boxArray[key.Item1, key.Item2 + i] = equipment.EquipmentCode[0];
+                            var newKey = (key.Item1, key.Item2 + unitSize);
+                            var newValue = foundValueH - unitSize;
+                            horizontalDict.Remove(foundKeyH);
+                            horizontalDict.TryAdd(newKey, newValue);
                         }
+                        Legend.Add($"{equipment.EquipmentCode} = {equipment.Name}");
                     }
-                    if (foundValueH - unitSize == 0)
+                    else if (foundKeyV != (0, 0))
                     {
-                        horizontalDict.Remove(foundKeyH);
-                    }
-                    else
-                    {
-                        var newKey = (key.Item1, key.Item2 + unitSize);
-                        var newValue = foundValueH - unitSize;
-                        horizontalDict.Remove(foundKeyH);
-                        horizontalDict.TryAdd(newKey, newValue);
-                    }
-                    Legend.Add($"{equipment.EquipmentCode} = {equipment.Name}");
-                }
-                else if (foundKeyV != (0, 0))
-                {
-                    var key = foundKeyV;
-                    for (int i = 0; i < unitSize; i++)
-                    {
-                        if (equipment.EquipmentCode == null)
+                        var key = foundKeyV;
+                        for (int i = 0; i < unitSize; i++)
                         {
-                            throw new InvalidOperationException("EquipmentCode is null.");
+                            if (equipment.EquipmentCode == null)
+                            {
+                                throw new InvalidOperationException("EquipmentCode is null.");
+                            }
+                            else if (equipment.EquipmentCode.Length == 0)
+                            {
+                                throw new InvalidOperationException("EquipmentCode is empty.");
+                            }
+                            else
+                            {
+                                boxArray[key.Item1 + i, key.Item2] = equipment.EquipmentCode[0];
+                            }
                         }
-                        else if (equipment.EquipmentCode.Length == 0)
+                        if (foundValueV - unitSize == 0)
                         {
-                            throw new InvalidOperationException("EquipmentCode is empty.");
+                            verticalDict.Remove(foundKeyV);
                         }
                         else
                         {
-                            boxArray[key.Item1 + i, key.Item2] = equipment.EquipmentCode[0];
+                            var newKey = (key.Item1 + unitSize, key.Item2);
+                            var newValue = foundValueV - unitSize;
+                            verticalDict.Remove(foundKeyV);
+                            verticalDict.TryAdd(newKey, newValue);
                         }
+                        Legend.Add($"{equipment.EquipmentCode} = {equipment.Name}");
                     }
-                    if (foundValueV - unitSize == 0)
-                    {
-                        verticalDict.Remove(foundKeyV);
-                    }
-                    else
-                    {
-                        var newKey = (key.Item1 + unitSize, key.Item2);
-                        var newValue = foundValueV - unitSize;
-                        verticalDict.Remove(foundKeyV);
-                        verticalDict.TryAdd(newKey, newValue);
-                    }
-                    Legend.Add($"{equipment.EquipmentCode} = {equipment.Name}");
+                    else { Unused.Add($"{equipment.Name}"); }
                 }
-                else { Unused.Add($"{equipment.EquipmentCode} = {equipment.Name}"); }
+                else { Inactive.Add($"{equipment.Name}"); }
             }
-            return (boxArray, Legend, Unused);
+            return (boxArray, Legend, Unused, Inactive);
         }
     }
 }

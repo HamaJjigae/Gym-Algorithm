@@ -1,0 +1,111 @@
+﻿@using DBConnectedFinalProjectThing.Services
+@code {
+    [Parameter] public Equipment Equipment { get; set; }
+    [Parameter] public EventCallback<Equipment> OnSave { get; set; }
+    [Parameter] public EventCallback OnClose { get; set; }
+
+    private string newName;
+    private int newUnitSize;
+
+    protected override void OnParametersSet()
+    {
+        newName = Equipment?.Name;
+        newUnitSize = Equipment?.UnitSize ?? 0;
+    }
+
+    private async Task SaveChanges()
+    {
+        if (!string.IsNullOrWhiteSpace(newName) && newUnitSize > 0)
+        {
+            Equipment.Name = newName;
+            Equipment.UnitSize = newUnitSize;
+            await OnSave.InvokeAsync(Equipment);
+            await OnClose.InvokeAsync();
+        }
+    }
+
+    private async Task Close()
+    {
+        await OnClose.InvokeAsync();
+    }
+}
+
+<div class="modal-overlay">
+    <div class="modal-content">
+        <h3>Edit Equipment</h3>
+        <label>
+            Name:
+            <input type="text" @bind="newName" />
+        </label>
+        <label>
+            Unit Size:
+            <input type="number" @bind="newUnitSize" />
+        </label>
+        <div class="modal-buttons">
+            <button @onclick="SaveChanges">Confirm</button>
+            <button @onclick="Close">Cancel</button>
+        </div>
+    </div>
+</div>
+
+<style>
+    .modal-overlay {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.5);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        z-index: 1000;
+    }
+
+    .modal-content {
+        background: white;
+        padding: 20px;
+        border-radius: 8px;
+        width: 300px;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        text-align: center;
+    }
+
+        .modal-content h3 {
+            margin-bottom: 20px;
+        }
+
+        .modal-content label {
+            display: block;
+            margin-bottom: 10px;
+            text-align: left;
+        }
+
+        .modal-content input {
+            width: calc(100% - 20px);
+            margin-top: 5px;
+            padding: 8px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+
+    .modal-buttons {
+        margin-top: 20px;
+        display: flex;
+        justify-content: center;
+        gap: 10px;
+    }
+
+        .modal-buttons button {
+            background-color: dodgerblue;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            padding: 12px 24px;
+            cursor: pointer;
+        }
+
+            .modal-buttons button:hover {
+                background-color: #1e90ff;
+            }
+</style>

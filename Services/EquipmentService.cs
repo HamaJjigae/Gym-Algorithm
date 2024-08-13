@@ -67,7 +67,7 @@ namespace DBConnectedFinalProjectThing.Services
                 throw;
             }
         }
-        public void AddEquipment(int equipmentId, int unitSize, string name, bool active)
+        public void AddEquipment(int equipmentId, int unitSize, string name, bool active = true)
         {
             try
             {
@@ -106,12 +106,18 @@ namespace DBConnectedFinalProjectThing.Services
         {
             try
             {
-                var equipmentRemoved = equipmentList.FirstOrDefault(e => e.EquipmentId == equipmentId);
-                if (equipmentRemoved == null)
+                var equipmentToRemove = equipmentList.FirstOrDefault(e => e.EquipmentId == equipmentId);
+                if (equipmentToRemove == null)
                 {
                     throw new KeyNotFoundException($"Equipment with ID {equipmentId} not found");
                 }
-                equipmentList.Remove(equipmentRemoved);
+
+                equipmentList.Remove(equipmentToRemove);
+
+                for (int i = 0; i < equipmentList.Count; i++)
+                {
+                    equipmentList[i].EquipmentId = i + 1;
+                }
             }
             catch (Exception ex)
             {
@@ -136,5 +142,18 @@ namespace DBConnectedFinalProjectThing.Services
                 throw;
             }
         }
+        public void SetActiveStatus(int equipmentId, bool isActive)
+        {
+            var equipment = equipmentList.FirstOrDefault(e => e.EquipmentId == equipmentId);
+            if (equipment != null)
+            {
+                equipment.Active = isActive;
+            }
+            else
+            {
+                throw new KeyNotFoundException($"Equipment with ID {equipmentId} not found");
+            }
+        }
+
     }
 }

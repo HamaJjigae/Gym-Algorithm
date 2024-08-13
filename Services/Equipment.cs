@@ -43,7 +43,7 @@ namespace DBConnectedFinalProjectThing.Services
             get { return equipmentCode; }
         }
 
-        public Equipment(int equipmentId, int unitSize, string? name, bool active)
+        public Equipment(int equipmentId, int unitSize, string? name, bool active = true)
         {
             EquipmentId = equipmentId;
             UnitSize = unitSize;

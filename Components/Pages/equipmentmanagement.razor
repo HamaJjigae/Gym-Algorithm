@@ -1,6 +1,173 @@
 ﻿@page "/equipmentmanagement"
-<h3>equipmentmanagement</h3>
+@using DBConnectedFinalProjectThing.Services
+@inject EquipmentService EquipmentService
+@inject NavigationManager Navigation
+
+<head>
+    <link rel="stylesheet" href="css/app.css" />
+    <PageTitle>EquipmentPage</PageTitle>
+</head>
+
+<main class="equip-main">
+    <h3>List of Equipment</h3>
+    <div class="equipment-list">
+        <div class="equipment-header">
+            <div class="header-item">ID</div>
+            <div class="header-item">Name</div>
+            <div class="header-item">Unit Size</div>
+            <div class="header-item">Active</div>
+            <div class="header-item">Edit</div>
+            <div class="header-item">Remove</div>
+        </div>
+
+        @foreach (var equipment in PaginatedEquipment)
+        {
+            <div class="equipment-item">
+                <div class="item-info">@equipment.EquipmentId</div>
+                <div class="item-info">@equipment.Name</div>
+                <div class="item-info">@equipment.UnitSize</div>
+                <div class="item-info active-column">
+                    <label>
+                        <input type="checkbox"
+                               class="checkbox-true"
+                               checked="@equipment.Active"
+                               @onchange="@(e => UpdateEquipmentStatus(equipment.EquipmentId, true))" />
+                        True
+                    </label>
+                    <label>
+                        <input type="checkbox"
+                               class="checkbox-false"
+                               checked="@(equipment.Active == false)"
+                               @onchange="@(e => UpdateEquipmentStatus(equipment.EquipmentId, false))" />
+                        False
+                    </label>
+                </div>
+                <div class="item-info edit-column">
+                    <button @onclick="() => ShowEditModal(equipment)">Edit</button>
+                </div>
+                <div class="item-info edit-column"> <!-- New column for Remove button -->
+                    <button @onclick="() => RemoveEquipment(equipment.EquipmentId)">Remove</button>
+                </div>
+            </div>
+        }
+    </div>
+
+    <div class="pagination-controls">
+        <button @onclick="PreviousPage" disabled="@(!HasPreviousPage)">Previous</button>
+        <span>Page @CurrentPage of @TotalPages</span>
+        <button @onclick="NextPage" disabled="@(!HasNextPage)">Next</button>
+    </div>
+
+    @if (isModalVisible)
+    {
+        <EditEquipmentModal Equipment="selectedEquipment"
+                            OnSave="HandleSave"
+                            OnClose="HideEditModal" />
+    }
+    @if (isAddModalVisible)
+    {
+        <AddEquipmentModal OnSave="HandleAddSave" OnClose="HideAddModal" />
+    }
+
+    <div class="buttons-container">
+        <button @onclick="ShowAddModal">Add</button>
+        <button @onclick="Continue">Continue</button>
+    </div>
+</main>
 
 @code {
+    private bool isModalVisible;
+    private bool isAddModalVisible;
+    private Equipment selectedEquipment;
+    private List<Equipment> PaginatedEquipment;
+    private int CurrentPage = 1;
+    private const int PageSize = 10;
 
+    protected override void OnInitialized()
+    {
+        LoadEquipment();
+    }
+
+    private void LoadEquipment()
+    {
+        var allEquipment = EquipmentService.GetAllEquipment();
+        var skip = (CurrentPage - 1) * PageSize;
+        PaginatedEquipment = allEquipment.Skip(skip).Take(PageSize).ToList();
+
+        var totalItems = allEquipment.Count();
+        TotalPages = (int)Math.Ceiling((double)totalItems / PageSize);
+        HasPreviousPage = CurrentPage > 1;
+        HasNextPage = CurrentPage < TotalPages;
+    }
+
+    private void ShowEditModal(Equipment equipment)
+    {
+        selectedEquipment = equipment;
+        isModalVisible = true;
+    }
+
+    private void HideEditModal()
+    {
+        isModalVisible = false;
+    }
+
+    private void HandleSave(Equipment updatedEquipment)
+    {
+        EquipmentService.ToggleActive(updatedEquipment.EquipmentId);
+        LoadEquipment();
+        StateHasChanged();
+    }
+
+    private void UpdateEquipmentStatus(int equipmentId, bool isActive)
+    {
+        EquipmentService.SetActiveStatus(equipmentId, isActive);
+    }
+
+    private void PreviousPage()
+    {
+        if (CurrentPage > 1)
+        {
+            CurrentPage--;
+            LoadEquipment();
+        }
+    }
+
+    private void NextPage()
+    {
+        if (CurrentPage < TotalPages)
+        {
+            CurrentPage++;
+            LoadEquipment();
+        }
+    }
+
+    private void ShowAddModal()
+    {
+        isAddModalVisible = true;
+    }
+
+    private void HideAddModal()
+    {
+        isAddModalVisible = false;
+    }
+
+    private void HandleAddSave()
+    {
+        LoadEquipment();
+        StateHasChanged();
+    }
+
+    private void Continue()
+    {
+        Navigation.NavigateTo("/algooutput");
+    }
+    private void RemoveEquipment(int equipmentId)
+    {
+        EquipmentService.RemoveEquipment(equipmentId);
+        LoadEquipment();
+    }
+
+    private int TotalPages { get; set; }
+    private bool HasPreviousPage { get; set; }
+    private bool HasNextPage { get; set; }
 }
