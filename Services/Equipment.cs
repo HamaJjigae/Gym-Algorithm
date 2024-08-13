@@ -12,11 +12,16 @@ namespace DBConnectedFinalProjectThing.Services
         private int unitSize;
         private string? name;
         private bool active;
+        private string? equipmentCode;
 
         public int EquipmentId
         {
             get { return equipmentId; }
-            set { equipmentId = value; }
+            set
+            {
+                equipmentId = value;
+                equipmentCode = GenerateEquipmentCode(equipmentId);
+            }
         }
         public int UnitSize
         {
@@ -33,6 +38,10 @@ namespace DBConnectedFinalProjectThing.Services
             get { return active; }
             set { active = value; }
         }
+        public string? EquipmentCode
+        {
+            get { return equipmentCode; }
+        }
 
         public Equipment(int equipmentId, int unitSize, string? name, bool active)
         {
@@ -40,6 +49,17 @@ namespace DBConnectedFinalProjectThing.Services
             UnitSize = unitSize;
             Name = name;
             Active = active;
+        }
+
+        private string? GenerateEquipmentCode(int id)
+        {
+            const string lowercase = "abcdefghijklmnopqrstuvwxyz";
+            const string uppercase = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+            string alphabet = lowercase + uppercase;
+
+            int index = id % alphabet.Length;
+
+            return alphabet[index].ToString();
         }
     }
 }

@@ -6,77 +6,96 @@ using System.Threading.Tasks;
 
 namespace DBConnectedFinalProjectThing.Algorithms
 {
-    public static class VerticalChecker
+    public class VerticalChecker
     {
-        public static Dictionary<(int, int), int> CheckColumnForSpaces(char[,] array, int columnIndex)
+        public static Dictionary<(int, int), int> CheckColumnForSpaces(char[,] array)
         {
-            if (columnIndex < 0 || columnIndex >= array.GetLength(1))
-            {
-                throw new ArgumentOutOfRangeException(nameof(columnIndex), "Column index is out of range.");
-            }
-
-            int columnLength = array.GetLength(0);
-
-            if (columnLength <= 2)
-            {
-                throw new ArgumentException("Column length must be greater than 2 to check for spaces between indices.");
-            }
-
+            int numRows = array.GetLength(0);
+            int numCols = array.GetLength(1);
             bool prevBlock = false;
             bool minSpaceDone = false;
             int track = 0;
             int trackReal = 0;
-            int minSpace = columnLength / 20;
+            int minSpace = numRows / 20;
             Dictionary<(int, int), int> exportDict = new Dictionary<(int, int), int>();
-
-            for (int i = 1; i < columnLength - 1; i++)
+            for (int k = 0; k < numCols; k++)
             {
-                if (i == columnLength - 2)
+                prevBlock = true;
+                minSpaceDone = false;
+                trackReal = 0;
+                track = 0;
+                for (int i = 1; i < numRows; i++)
                 {
-                    if (minSpaceDone == false)
+                    if (array[i, k] == ' ' && minSpaceDone == false && track < minSpace)
                     {
+                        track++;
+                        prevBlock = false;
                         continue;
                     }
-                    else if (array[i, columnIndex] == ' ' && minSpaceDone && i == columnLength - 2)
+                    else if (array[i, k] == ' ' && minSpaceDone == false && track >= minSpace)
                     {
-                        track = 0;
+                        track++;
                         trackReal++;
-                        exportDict.Add((i - trackReal, columnIndex), trackReal);
-                        trackReal = 0;
+                        minSpaceDone = true;
+                        prevBlock = false;
                         continue;
                     }
-                }
-
-                if (array[i, columnIndex] == ' ' && minSpaceDone == false && track < minSpace)
-                {
-                    track++;
-                    continue;
-                }
-                else if (array[i, columnIndex] == ' ' && minSpaceDone == false && track >= minSpace)
-                {
-                    track++;
-                    trackReal++;
-                    minSpaceDone = true;
-                    continue;
-                }
-                else if (array[i, columnIndex] == ' ' && minSpaceDone)
-                {
-                    trackReal++;
-                    continue;
-                }
-                else if (array[i, columnIndex] != ' ' && prevBlock)
-                {
-                    continue;
-                }
-                else if (array[i, columnIndex] != ' ' && prevBlock == false)
-                {
-                    exportDict.Add((i - trackReal, columnIndex), trackReal);
-                    track = 0;
-                    trackReal = 0;
-                    prevBlock = true;
+                    else if (array[i, k] == ' ' && minSpaceDone)
+                    {
+                        trackReal++;
+                        prevBlock = false;
+                        continue;
+                    }
+                    else if (array[i, k] != ' ' && prevBlock)
+                    {
+                        continue;
+                    }
+                    else if (array[i, k] != ' ' && prevBlock == false)
+                    {
+                        if (IsClear(array, i - trackReal, k))
+                        {
+                            exportDict.Add((i - trackReal, k), trackReal - minSpace);
+                            track = 0;
+                            trackReal = 0;
+                            prevBlock = true;
+                            minSpaceDone = false;
+                            continue;
+                        }
+                        else
+                        {
+                            track = 0;
+                            trackReal = 0;
+                            prevBlock = true;
+                            minSpaceDone = false;
+                            continue;
+                        }
+                    }
                 }
             }
             return exportDict;
+        }
+        private static bool IsClear(char[,] array, int y, int x)
+        {
+            int numRows = array.GetLength(0);
+            int numCols = array.GetLength(1);
+
+            int min = numCols / 20;
+
+            if (x - min >= 0 && x + min < numCols)
+            {
+                if (y >= 0 && y < numRows)
+                {
+                    for (int i = 0; i <= min; i++)
+                    {
+                        if (array[y, x - i] != ' ' || array[y, x + i] != ' ')
+                        {
+                            return false;
+                        }
+                    }
+                    return true;
+                }
+            }
+            return false;
         }
     }
 }
