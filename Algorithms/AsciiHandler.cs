@@ -12,90 +12,82 @@ namespace DBConnectedFinalProjectThing.Algorithms
 {
     public class AsciiHandler
     {
-        public string PerimeterBox(int height, int width)
+        public char[,] PerimeterBox(int height, int width)
         {
-            StringBuilder bobTheBuilder = new StringBuilder();
+            int realWidth = width + 2;
+            int realHeight = height + 2;
+            char[,] boxArray = new char[realHeight, realWidth];
 
-            bobTheBuilder.AppendLine(string.Join(" ", Enumerable.Repeat('*', width + 2)));
-
-            for (int i = 0; i < height; i++)
+            for (int row = 0; row < realHeight; row++)
             {
-                bobTheBuilder.AppendLine($"*{new string(' ', width)}*");
-            }
-
-            bobTheBuilder.AppendLine(string.Join(" ", Enumerable.Repeat('*', width + 2)));
-
-            return bobTheBuilder.ToString();
-        }
-        public string EquipmentSorting(string boxStructure, List<Equipment> equipmentList, int height, int width)
-        {
-            int realWidth = width * 2 - 2;
-            int realHeight = height - 2;
-
-            int totalUnitSize = equipmentList.Sum(e => e.UnitSize);
-            if (totalUnitSize > realWidth * realHeight)
-            {
-                throw new InvalidOperationException("The combined unit size of the equipment exceeds the maximum area.");
-            }
-
-            var lines = boxStructure.Split(new[] { '\r', '\n' }, StringSplitOptions.RemoveEmptyEntries);
-            char[,] grid = new char[realHeight, realWidth];
-
-            for (int i = 0; i < realHeight; i++)
-            {
-                for (int k = 0; k < realWidth; k++)
+                for (int col = 0; col < realWidth; col++)
                 {
-                    grid[i, k] = ' ';
-                }
-            }
-
-            for (int i = 0; i < realHeight; i++)
-            {
-                lines[i + 1] = $"{new string(grid.GetRow(i))}*";
-            }
-
-            var usedEquipment = new HashSet<int>();
-            int equipmentIndex = 0;
-            int rowIndex = 1;
-            int colIndex = 1;
-
-            while (equipmentIndex < equipmentList.Count && rowIndex < lines.Length - 1)
-            {
-                var equipment = equipmentList[equipmentIndex];
-
-                if (usedEquipment.Contains(equipment.EquipmentId))
-                {
-                    equipmentIndex++;
-                    continue;
-                }
-
-                string equipmentIdString = equipment.EquipmentId.ToString();
-                int unitSize = equipment.UnitSize;
-
-                char[] rowChars = lines[rowIndex].ToCharArray();
-                while (unitSize > 0 && colIndex < rowChars.Length - 1)
-                {
-                    if (rowChars[colIndex] == ' ')
+                    if (row == 0 || row == realHeight - 1 || col == 0 || col == realWidth - 1)
                     {
-                        rowChars[colIndex] = equipmentIdString[0];
-                        unitSize--;
+                        boxArray[row, col] = '*';
                     }
-                    colIndex++;
+                    else
+                    {
+                        boxArray[row, col] = ' ';
+                    }
                 }
-
-                lines[rowIndex] = new string(rowChars);
-
-                if (unitSize == 0)
-                {
-                    usedEquipment.Add(equipment.EquipmentId);
-                    equipmentIndex++;
-                }
-
-                rowIndex++;
-                colIndex = 1;
             }
+            return boxArray;
+        }
+        public void PrintBox(char[,] boxArray)
+        {
+            int realHeight = boxArray.GetLength(0);
+            int realWidth = boxArray.GetLength(1);
 
-            return string.Join(Environment.NewLine, lines);
+            for (int row = 0; row < realHeight; row++)
+            {
+                for (int col = 0; col < realWidth; col++)
+                {
+                    Console.Write(boxArray[row, col]);
+                }
+                Console.WriteLine();
+            }
+        }
+        public string EquipmentSorting(char[,] boxArray, List<Equipment> equipmentList)
+        {
+            int realWidth = boxArray.GetLength(1); //this is columns
+            int realHeight = boxArray.GetLength(0); //this is rows
+            if (realWidth % 2 == 0)
+            {
+                int centerXLow = ((realWidth / 2) - 1);
+                int centerXHigh = (realWidth / 2);
+                for (int i = 1; i < realHeight - 1; i++)
+                {
+                    boxArray[i, centerXLow] = '.';
+                    boxArray[i, centerXHigh] = '.';
+                }    
+            }
+            else
+            {
+                int centerX = realWidth / 2;
+                for (int i = 1; i < realHeight - 1; i ++)
+                {
+                    boxArray[i, centerX] = '.';
+                }
+            }
+            if (realHeight % 2 == 0)
+            {
+                int centerYLow = ((realHeight / 2) - 1);
+                int centerYHigh = (realHeight / 2);
+                for (int i = 1; i < realWidth -1; i++)
+                {
+                    boxArray[centerYLow, i] = '.';
+                    boxArray[centerYHigh, i] = '.';
+                }
+            }
+            else
+            {
+                int centerY = realHeight / 2;
+                for (int i = 1; i < realWidth - 1; i++)
+                {
+                    boxArray[centerY, i] = '.';
+                }
+            }
         }
     }
 }
