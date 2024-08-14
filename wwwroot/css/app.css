@@ -296,3 +296,9 @@ h1:focus {
     .remove-column button:hover {
         background-color: #c82333;
     }
+.algo-main{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}

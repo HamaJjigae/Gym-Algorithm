@@ -1,86 +1,35 @@
-﻿using Oracle.ManagedDataAccess.Client;
-using System.Data;
-using System.Diagnostics;
+﻿using Microsoft.Maui.Storage;
+using System.IO;
+using System.Threading.Tasks;
+using SQLite;
 
 namespace DBConnectedFinalProjectThing.Services
 {
-    public class GymDbService
+    public class GymDBService
     {
-        private readonly string _connectionString;
-
-        public GymDbService(string connectionString)
+        private readonly string _databasePath;
+        public GymDBService()
         {
-            _connectionString = connectionString;
-        }
+            var localFolder = FileSystem.AppDataDirectory;
+            _databasePath = Path.Combine(localFolder, "gymfiledb.db");
 
-        public List<Equipment> GetEquipment()
-        {
-            var equipmentList = new List<Equipment>();
-
-            try
+            if (!File.Exists(_databasePath))
             {
-                using (var connection = new OracleConnection(_connectionString))
-                {
-                    connection.Open();
-                    using (var command = new OracleCommand("SELECT * FROM equipment", connection))
-                    {
-                        using (var reader = command.ExecuteReader())
-                        {
-                            while (reader.Read())
-                            {
-                            }
-                        }
-                    }
-                }
-            }
-            catch (Exception ex)
-            {
-                Debug.WriteLine($"Error fetching equipment: {ex.Message}");
-            }
-
-            return equipmentList;
-        }
-
-        public void AddEquipment(int unitSize, string name, string active)
-        {
-            using (OracleConnection connection = new OracleConnection(_connectionString))
-            {
-                connection.Open();
-                using (OracleCommand command = new OracleCommand("INSERT INTO equipment (unit_size, name, active) VALUES (:unitSize, :name, :active)", connection))
-                {
-                    command.Parameters.Add(new OracleParameter("unitSize", unitSize));
-                    command.Parameters.Add(new OracleParameter("name", name));
-                    command.Parameters.Add(new OracleParameter("active", active));
-
-                    command.ExecuteNonQuery();
-                }
+                var resourcePath = Path.Combine(FileSystem.AppDataDirectory, "Resources", "DB", "gymfiledb.db");
+                File.Copy(resourcePath, _databasePath);
             }
         }
-
-        public void ToggleEquipmentStatus(int equipmentId)
+        public SQLiteConnection GetConnection()
         {
-            using (OracleConnection connection = new OracleConnection(_connectionString))
+            return new SQLiteConnection(_databasePath);
+        }
+        public void AddEquipment(Equipment equipment)
+        {
+            using (var db = GetConnection())
             {
-                connection.Open();
-
-                string currentStatus;
-                using (OracleCommand getStatus = new OracleCommand("SELECT active FROM equipment WHERE id = :equipmentId", connection))
-                {
-                    getStatus.Parameters.Add(new OracleParameter("equipmentId", equipmentId));
-
-                    currentStatus = (string)getStatus.ExecuteScalar();
-                }
-
-                string newStatus = currentStatus == "Y" ? "N" : "Y";
-
-                using (OracleCommand updateCommand = new OracleCommand("UPDATE equipment SET active = :newStatus WHERE id = :equipmentId", connection))
-                {
-                    updateCommand.Parameters.Add(new OracleParameter("newStatus", newStatus));
-                    updateCommand.Parameters.Add(new OracleParameter("equipmentId", equipmentId));
-
-                    updateCommand.ExecuteNonQuery();
-                }
+                db.Insert(equipment);
             }
         }
     }
+
 }

@@ -1,5 +1,89 @@
 ﻿@page "/algooutput"
-<h1>floorplan</h1>
-@code {
+@using DBConnectedFinalProjectThing.Algorithms
+@using DBConnectedFinalProjectThing.Services
+@inject GymDim GymDim
+@inject EquipmentService EquipmentService
+<main class="algo-main">
+<h1>Floor Plan</h1>
+<pre>
+    @RenderBoxArray(boxArray)
+</pre>
+<div class="horiflex">
+<div>
+<h2>Legend</h2>
+<ul id="legend">
+    @foreach (var item in Legend)
+    {
+        <li>@item</li>
+    }
+</ul>
+</div>
+<div>
+<h2>Equipment Unable to Fit</h2>
+<ul id="unused">
+    @foreach (var item in Unused)
+    {
+        <li>@item</li>
+    }
+</ul>
+</div>
+<div>
+<h2>Inactive Equipment</h2>
+<ul id="inactive">
+    @foreach (var item in Inactive)
+    {
+        <li>@item</li>
+    }
+</ul>
+</div>
+</div>
+</main>
 
+@code {
+    private AsciiHandler asciiHandler = new AsciiHandler();
+    private char[,] boxArray;
+    private List<string> Legend;
+    private List<string> Unused;
+    private List<string> Inactive;
+
+    protected override void OnInitialized()
+    {
+        base.OnInitialized();
+        InitializeFloorPlan();
+    }
+
+    private void InitializeFloorPlan()
+    {
+        int length = GymDim.Length;
+        int width = GymDim.Width;
+
+        AsciiHandler asciiHandler = new AsciiHandler();
+        boxArray = asciiHandler.PerimeterBox(length, width);
+
+        var equipmentList = EquipmentService.GetAllEquipment();
+
+        var result = asciiHandler.EquipmentSorting(boxArray, equipmentList);
+        boxArray = result.Item1;
+        Legend = result.Item2;
+        Unused = result.Item3;
+        Inactive = result.Item4;
+    }
+
+    private string RenderBoxArray(char[,] array)
+    {
+        var sb = new System.Text.StringBuilder();
+        int rows = array.GetLength(0);
+        int cols = array.GetLength(1);
+
+        for (int i = 0; i < rows; i++)
+        {
+            for (int j = 0; j < cols; j++)
+            {
+                sb.Append(array[i, j]);
+            }
+            sb.AppendLine();
+        }
+
+        return sb.ToString();
+    }
 }

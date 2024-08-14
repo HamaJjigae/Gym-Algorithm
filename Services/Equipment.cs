@@ -20,7 +20,7 @@ namespace DBConnectedFinalProjectThing.Services
             set
             {
                 equipmentId = value;
-                equipmentCode = GenerateEquipmentCode(equipmentId);
+                equipmentCode = GenerateEquipmentCode(equipmentId -1);
             }
         }
         public int UnitSize
