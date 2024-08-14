@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.IO;
 using System.Linq;
 
 namespace DBConnectedFinalProjectThing.Services
@@ -8,13 +9,14 @@ namespace DBConnectedFinalProjectThing.Services
     public class EquipmentService
     {
         private List<Equipment> equipmentList;
+        private const string FilePath = @"C:\Users\matth\source\repos\DBConnectedFinalProjectThing\Resources\DB\equipmentData.txt";
 
         public EquipmentService()
         {
             try
             {
                 equipmentList = new List<Equipment>();
-                PopulateEquipmentData();
+                LoadEquipmentData();
             }
             catch (Exception ex)
             {
@@ -23,34 +25,45 @@ namespace DBConnectedFinalProjectThing.Services
             }
         }
 
-        private void PopulateEquipmentData()
+        private void LoadEquipmentData()
         {
             try
             {
-                AddEquipment(1, 1, "Small Bench", true);
-                AddEquipment(2, 2, "Dumbbell Rack", true);
-                AddEquipment(3, 1, "Kettlebell Set", true);
-                AddEquipment(4, 3, "Treadmill", true);
-                AddEquipment(5, 4, "Exercise Bike", true);
-                AddEquipment(6, 3, "Rowing Machine", true);
-                AddEquipment(7, 5, "Smith Machine", true);
-                AddEquipment(8, 6, "Power Rack", true);
-                AddEquipment(9, 5, "Leg Press Machine", true);
-                AddEquipment(10, 8, "Multi-Gym Station", true);
-                AddEquipment(11, 9, "Cable Cross Over", true);
-                AddEquipment(12, 10, "Functional Trainer", true);
-                AddEquipment(13, 2, "Unusual Equipment A", false);
-                AddEquipment(14, 1, "Experimental Device B", false);
-                AddEquipment(15, 4, "Rare Equipment C", true);
-                AddEquipment(16, 1, "Medicine Ball Rack", true);
-                AddEquipment(17, 3, "Elliptical Trainer", true);
-                AddEquipment(18, 6, "Seated Leg Curl", true);
-                AddEquipment(19, 8, "CrossFit Rig", true);
-                AddEquipment(20, 5, "Prototype Equipment D", false);
+                if (File.Exists(FilePath))
+                {
+                    var lines = File.ReadAllLines(FilePath);
+                    foreach (var line in lines)
+                    {
+                        var parts = line.Split(',');
+                        int equipmentId = int.Parse(parts[0]);
+                        int unitSize = int.Parse(parts[1]);
+                        string name = parts[2];
+                        bool active = bool.Parse(parts[3]);
+                        AddEquipment(equipmentId, unitSize, name, active);
+                    }
+                }
+                else
+                {
+                    SaveEquipmentData();
+                }
             }
             catch (Exception ex)
             {
-                Debug.WriteLine($"An error occurred while populating equipment data: {ex.Message}");
+                Debug.WriteLine($"An error occurred while loading equipment data: {ex.Message}");
+                throw;
+            }
+        }
+
+        public void SaveEquipmentData()
+        {
+            try
+            {
+                var lines = equipmentList.Select(e => $"{e.EquipmentId},{e.UnitSize},{e.Name},{e.Active}");
+                File.WriteAllLines(FilePath, lines);
+            }
+            catch (Exception ex)
+            {
+                Debug.WriteLine($"An error occurred while saving equipment data: {ex.Message}");
                 throw;
             }
         }
@@ -67,6 +80,7 @@ namespace DBConnectedFinalProjectThing.Services
                 throw;
             }
         }
+
         public void AddEquipment(int equipmentId, int unitSize, string name, bool active = true)
         {
             try
@@ -102,6 +116,7 @@ namespace DBConnectedFinalProjectThing.Services
                 throw;
             }
         }
+
         public void RemoveEquipment(int equipmentId)
         {
             try
@@ -125,6 +140,7 @@ namespace DBConnectedFinalProjectThing.Services
                 throw;
             }
         }
+
         public void ToggleActive(int equipmentId)
         {
             try
@@ -142,6 +158,7 @@ namespace DBConnectedFinalProjectThing.Services
                 throw;
             }
         }
+
         public void SetActiveStatus(int equipmentId, bool isActive)
         {
             var equipment = equipmentList.FirstOrDefault(e => e.EquipmentId == equipmentId);
@@ -154,6 +171,5 @@ namespace DBConnectedFinalProjectThing.Services
                 throw new KeyNotFoundException($"Equipment with ID {equipmentId} not found");
             }
         }
-
     }
 }

@@ -45,7 +45,7 @@
                 <div class="item-info edit-column">
                     <button @onclick="() => ShowEditModal(equipment)">Edit</button>
                 </div>
-                <div class="item-info edit-column"> <!-- New column for Remove button -->
+                <div class="item-info edit-column">
                     <button @onclick="() => RemoveEquipment(equipment.EquipmentId)">Remove</button>
                 </div>
             </div>
@@ -159,6 +159,7 @@
 
     private void Continue()
     {
+        EquipmentService.SaveEquipmentData();
         Navigation.NavigateTo("/algooutput");
     }
     private void RemoveEquipment(int equipmentId)

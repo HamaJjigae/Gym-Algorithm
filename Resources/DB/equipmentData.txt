@@ -28,13 +28,12 @@
 28,9,Abdominal Crunch Machine,True
 29,10,Back Extension Machine,True
 30,2,Tricep Dip Station,True
-31,3,Pull-Up Bar,True
-32,4,Preacher Curl Bench,True
-33,5,Hyperextension Bench,True
-34,6,Glute Ham Developer,True
-35,7,Calf Raise Machine,True
-36,8,Smith Machine,True
-37,9,Power Tower,True
-38,10,Leg Press,True
-39,2,Seated Row Machine,True
-40,3,Standing Calf Raise,False
+31,4,Preacher Curl Bench,True
+32,5,Hyperextension Bench,True
+33,6,Glute Ham Developer,True
+34,7,Calf Raise Machine,True
+35,8,Smith Machine,True
+36,9,Power Tower,True
+37,2,Seated Row Machine,True
+38,3,Standing Calf Raise,False
+39,12,Leg Press,True
