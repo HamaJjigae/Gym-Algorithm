@@ -1,0 +1,40 @@
+1,1,Small Bench,True
+2,2,Dumbbell Rack,True
+3,1,Kettlebell Set,True
+4,3,Treadmill,True
+5,4,Exercise Bike,True
+6,3,Rowing Machine,True
+7,5,Smith Machine,True
+8,6,Power Rack,True
+9,5,Leg Press Machine,True
+10,8,Multi-Gym Station,True
+11,9,Cable Cross Over,True
+12,10,Functional Trainer,True
+13,2,Unusual Equipment A,False
+14,1,Experimental Device B,False
+15,4,Rare Equipment C,True
+16,1,Medicine Ball Rack,True
+17,3,Elliptical Trainer,True
+18,6,Seated Leg Curl,True
+19,8,CrossFit Rig,True
+20,5,Prototype Equipment D,False
+21,2,Adjustable Bench,True
+22,3,Lat Pulldown Machine,True
+23,4,Leg Extension Machine,True
+24,5,Chest Press Machine,True
+25,6,Incline Bench Press,True
+26,7,Decline Bench Press,True
+27,8,Leg Curl Machine,True
+28,9,Abdominal Crunch Machine,True
+29,10,Back Extension Machine,True
+30,2,Tricep Dip Station,True
+31,3,Pull-Up Bar,True
+32,4,Preacher Curl Bench,True
+33,5,Hyperextension Bench,True
+34,6,Glute Ham Developer,True
+35,7,Calf Raise Machine,True
+36,8,Smith Machine,True
+37,9,Power Tower,True
+38,10,Leg Press,True
+39,2,Seated Row Machine,True
+40,3,Standing Calf Raise,False
